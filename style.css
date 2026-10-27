@@ -4,8 +4,8 @@
   right: 20px;
   bottom: 90px;
   width: 320px;
-  max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 40px);
+  max-width: 100vw;
+  max-height: 100vh;
   background: var(--SmartThemeBlurTintColor, #1f1f1f);
   color: var(--SmartThemeTextColor, #e6e6e6);
   border: 1px solid var(--SmartThemeBorderColor, #3a3a3a);
@@ -1489,4 +1489,47 @@
   min-height: 40px !important;
   border-radius: 50% !important;
   opacity: 0.5 !important;
+}
+/* ===== 手机夜间模式：背景与字体同步 ===== */
+@media (prefers-color-scheme: dark) {
+
+/* 输入区域：深灰背景、浅色文字 */
+#send_form,
+#send_form:focus-within {
+background-color: #292929 !important;
+color: #E0E0E0 !important;
+}
+
+#send_textarea,
+#send_textarea:focus {
+background-color: #292929 !important;
+color: #E0E0E0 !important;
+caret-color: #FFFFFF !important;
+}
+
+/* 夜间模式：聊天正文、小说标题和文件名同步变浅 */
+#chat .mes .mes_text,
+#vocab-break-panel .vb-title,
+#vocab-break-reader-panel .vb-title,
+#vocab-break-reader-panel .vb-reader-title,
+#vocab-break-reader-panel .vb-reader-meta,
+#vocab-break-reader-panel .vb-reader-meta *,
+#vocab-break-panel .vb-reader-meta,
+#vocab-break-panel .vb-reader-meta * {
+  color: #E0E0E0 !important;
+}
+
+/* 用户与角色消息的背景同步变暗 */
+#chat .mes[is_user=“true”],
+#chat .mes[is_user=“false”] {
+background-color: #292929 !important;
+}
+
+/* 输入框及消息区域的边框 */
+#send_form,
+#send_textarea,
+#chat .mes[is_user=“true”],
+#chat .mes[is_user=“false”] {
+border-color: #1E1E1E !important;
+}
 }
