@@ -1647,3 +1647,6 @@ border-color: #1E1E1E !important;
     border-color: #c9b79b;
   }
 }
+#vocab-break-reader-panel .vb-reader-page .vb-reader-paragraph {
+  margin-bottom: 20px !important;
+}
