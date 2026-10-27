@@ -1533,3 +1533,35 @@ background-color: #292929 !important;
 border-color: #1E1E1E !important;
 }
 }
+/* ===== 阅读小窗：夜间模式同步变色 ===== */
+@media (prefers-color-scheme: dark) {
+  #vocab-break-reader-panel.is-reader .vb-reader-title,
+  #vocab-break-reader-panel .vb-reader-meta,
+  #vocab-break-reader-panel .vb-reader-meta *,
+  #vocab-break-reader-panel .vb-reader-title-row,
+  #vocab-break-reader-panel .vb-reader-title-row *,
+  #vocab-break-reader-panel .vb-reader-remote-title {
+    color: #E0E0E0 !important;
+  }
+
+  /* 阅读窗口中间区域 */
+  #vocab-break-reader-panel.is-reader .vb-reader-library,
+  #vocab-break-reader-panel.is-reader .vb-reader-remote {
+    background: #292929 !important;
+    color: #E0E0E0 !important;
+    border-color: #1E1E1E !important;
+  }
+
+  /* 阅读窗口内的输入框与按钮 */
+  #vocab-break-reader-panel.is-reader .vb-reader-library select,
+  #vocab-break-reader-panel.is-reader .vb-reader-library button,
+  #vocab-break-reader-panel.is-reader .vb-reader-remote select,
+  #vocab-break-reader-panel.is-reader .vb-reader-remote button,
+  #vocab-break-reader-panel.is-reader .vb-reader-encoding-select,
+  #vocab-break-reader-panel.is-reader .vb-reader-jump-input,
+  #vocab-break-reader-panel.is-reader .vb-reader-jump-btn {
+    background: #292929 !important;
+    color: #E0E0E0 !important;
+    border-color: #444 !important;
+  }
+}
