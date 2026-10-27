@@ -1403,10 +1403,10 @@
 /* 背词和阅读器悬浮窗 */
 #vocab-break-bar,
 #vocab-break-reader-bar {
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  min-height: 44px !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
 
   padding: 0 !important;
   margin: 0 !important;
@@ -1460,5 +1460,33 @@
 /* 收起后的圆形悬浮窗：整体透明度 50% */
 #vocab-break-bar.is-open,
 #vocab-break-reader-bar.is-open {
+  opacity: 0.5 !important;
+}
+/* ===== 40px 圆形悬浮窗：左右边缘半隐藏 ===== */
+
+/* 左侧吸边：隐藏一半 */
+#vocab-break-bar.vb-docked-left,
+#vocab-break-reader-bar.vb-docked-left {
+  left: -20px !important;
+  right: auto !important;
+}
+
+/* 右侧吸边：隐藏一半 */
+#vocab-break-bar.vb-docked-right,
+#vocab-break-reader-bar.vb-docked-right {
+  right: -20px !important;
+  left: auto !important;
+}
+
+/* 吸边后保持 40px 圆形和 50% 透明度 */
+#vocab-break-bar.vb-docked-left,
+#vocab-break-bar.vb-docked-right,
+#vocab-break-reader-bar.vb-docked-left,
+#vocab-break-reader-bar.vb-docked-right {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 50% !important;
   opacity: 0.5 !important;
 }
