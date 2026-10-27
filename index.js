@@ -852,6 +852,7 @@ function applyFloatingPositions() {
     if (pos) {
       applyFloatingPosition(readerPanel, pos, getPanelSize('reader'));
       if (readerBar) applyFloatingPosition(readerBar, pos, barFallback);
+      if (readerBar) updateBarDocking(readerBar, pos);
     }
   }
 
