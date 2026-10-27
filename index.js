@@ -813,6 +813,20 @@ function applyFloatingPosition(el, pos, fallback) {
   el.style.bottom = 'auto';
 }
 
+function updateBarDocking(bar, pos) {
+  if (!bar || !pos) return;
+
+  if (state.drag.active && state.drag.target === bar.id) return;
+
+  const size = getElementSize(bar, { width: 40, height: 40 });
+
+  const dockLeft = pos.x <= DRAG_MARGIN + 2;
+  const dockRight =
+    pos.x + size.width >= window.innerWidth - DRAG_MARGIN - 2;
+
+  bar.classList.toggle('vb-docked-left', dockLeft);
+  bar.classList.toggle('vb-docked-right', !dockLeft && dockRight);
+}
 function applyFloatingPositions() {
   const drillPanel = document.getElementById('vocab-break-panel');
   const drillBar = document.getElementById('vocab-break-bar');
@@ -820,7 +834,7 @@ function applyFloatingPositions() {
   const readerBar = document.getElementById('vocab-break-reader-bar');
   const drillChatDock = document.getElementById('vocab-break-drill-chat-dock');
   const readerChatDock = document.getElementById('vocab-break-reader-chat-dock');
-  const barFallback = { width: 260, height: 40 };
+  const barFallback = { width: 40, height: 40 };
 
   if (drillPanel) {
     ensureDefaultPosition(drillPanel, 'drill');
@@ -828,6 +842,7 @@ function applyFloatingPositions() {
     if (pos) {
       applyFloatingPosition(drillPanel, pos, getPanelSize('drill'));
       if (drillBar) applyFloatingPosition(drillBar, pos, barFallback);
+      if (drillBar) updateBarDocking(drillBar, pos);
     }
   }
 
@@ -931,6 +946,15 @@ function beginDrag(e, targetEl) {
     if (e.target.closest('button, select, input, textarea, a')) return;
   }
   const rect = targetEl.getBoundingClientRect();
+if (
+  targetEl.id === 'vocab-break-bar' ||
+  targetEl.id === 'vocab-break-reader-bar'
+) {
+  targetEl.style.left = `${rect.left}px`;
+  targetEl.style.right = 'auto';
+  targetEl.classList.remove('vb-docked-left', 'vb-docked-right');
+}
+
   state.drag.active = true;
   state.drag.offsetX = e.clientX - rect.left;
   state.drag.offsetY = e.clientY - rect.top;
@@ -964,7 +988,7 @@ function onDrag(e) {
       : drillPanel;
   if (!targetEl) return;
   const isBar = targetEl === drillBar || targetEl === readerBar;
-  const fallback = isBar ? { width: 260, height: 40 } : isReader ? getPanelSize('reader') : getPanelSize('drill');
+  const fallback = isBar ? { width: 40, height: 40 } : isReader ? getPanelSize('reader') : getPanelSize('drill');
   const size = getElementSize(targetEl, fallback);
   const x = e.clientX - state.drag.offsetX;
   const y = e.clientY - state.drag.offsetY;
@@ -975,10 +999,17 @@ function onDrag(e) {
 
 function endDrag() {
   if (!state.drag.active) return;
+
   state.drag.active = false;
   state.drag.justDragged = state.drag.moved;
   state.drag.target = '';
+
+  if (state.drag.justDragged) {
+    applyFloatingPositions();
+  }
+
   saveSettings();
+
   if (state.drag.justDragged) {
     setTimeout(() => {
       state.drag.justDragged = false;
