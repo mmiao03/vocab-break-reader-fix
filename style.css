@@ -812,39 +812,6 @@
   }
 }
 
-/* ===== 夜间模式：酒馆聊天区域同步 ===== */
-@media (prefers-color-scheme: dark) {
-  #send_form,
-  #send_form:focus-within {
-    background-color: #292929 !important;
-    color: #E0E0E0 !important;
-  }
-
-  #send_textarea,
-  #send_textarea:focus {
-    background-color: #292929 !important;
-    color: #E0E0E0 !important;
-    caret-color: #FFFFFF !important;
-  }
-
-  #chat .mes .mes_text {
-    background: #292929 !important;
-    color: #E0E0E0 !important;
-  }
-
-  #chat .mes[is_user="true"],
-  #chat .mes[is_user="false"] {
-    background-color: #292929 !important;
-  }
-
-  #send_form,
-  #send_textarea,
-  #chat .mes[is_user="true"],
-  #chat .mes[is_user="false"] {
-    border-color: #1E1E1E !important;
-  }
-}
-
 /* ===== 夜间模式：阅读小窗 ===== */
 @media (prefers-color-scheme: dark) {
   #vocab-break-reader-panel .vb-title,
