@@ -1151,3 +1151,39 @@
     transition: none !important;
   }
 }
+
+/* =========================================
+   阅读小窗 · 柏宝书吸边定位最终修复
+   修复旧版 left/right:-20px 与 transform 冲突
+========================================= */
+
+/* 左侧：先贴住屏幕边缘，再向外隐藏58% */
+#vocab-break-reader-bar.is-open.vb-docked-left {
+    left: 0 !important;
+    right: auto !important;
+
+    transform: translateX(-58%) !important;
+
+    opacity: .82 !important;
+    pointer-events: auto !important;
+}
+
+/* 右侧：同理 */
+#vocab-break-reader-bar.is-open.vb-docked-right {
+    right: 0 !important;
+    left: auto !important;
+
+    transform: translateX(58%) !important;
+
+    opacity: .82 !important;
+    pointer-events: auto !important;
+}
+
+/* 唤醒时完整滑出 */
+#vocab-break-reader-bar.is-open.vb-awake,
+#vocab-break-reader-bar.is-open.vb-docked-left:hover,
+#vocab-break-reader-bar.is-open.vb-docked-right:hover {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
