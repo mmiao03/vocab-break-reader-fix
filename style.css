@@ -1018,10 +1018,10 @@
 /* 悬浮入口：整个大书本图标本身就是可拖动、可点击的控件 */
 #vocab-break-reader-bar {
   position: fixed !important;
-  width: 22px !important;
-  height: 27px !important;
-  min-width: 22px !important;
-  min-height: 27px !important;
+  width: 24px !important;
+  height: 30px !important;
+  min-width: 24px !important;
+  min-height: 30px !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
