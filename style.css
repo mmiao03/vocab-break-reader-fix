@@ -1183,9 +1183,9 @@
 }
 /* 扩大悬浮入口触控范围，不改变图标大小 */
 #vocab-break-reader-bar {
-    width: 33px !important;
+    width: 40px !important;
     height: 33px !important;
-    min-width: 33px !important;
+    min-width: 40px !important;
     min-height: 33px !important;
 }
 
