@@ -1066,12 +1066,12 @@
   display: block !important;
   position: absolute !important;
   inset: 0 !important;
-  width: 20% !important;
-  height: 20% !important;
+  width: 100% !important;
+  height: 100% !important;
   background-image: url("./reader-float-icon.png") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  background-size: 20% 20% !important;
+  background-size: 100% 100% !important;
   transform: none !important;
   filter: drop-shadow(0 5px 10px rgba(0, 0, 0, .22));
   pointer-events: none !important;
