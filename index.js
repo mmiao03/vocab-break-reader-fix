@@ -2196,7 +2196,26 @@ function ensureReaderBar() {
     <div class="vb-bar-caret">▾</div>
   `;
   bar.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') bar.classList.add('vb-awake');
+  });
+
+  bar.addEventListener('pointerleave', e => {
+    if (e.pointerType === 'mouse' && !state.drag.active) {
+      bar.classList.remove('vb-awake');
+    }
+  });
+
+  bar.addEventListener('pointerdown', e => {
+    bar.classList.add('vb-awake');
     beginDrag(e, bar);
+  });
+
+  bar.addEventListener('pointerup', () => {
+    window.setTimeout(() => bar.classList.remove('vb-awake'), 280);
+  });
+
+  bar.addEventListener('pointercancel', () => {
+    window.setTimeout(() => bar.classList.remove('vb-awake'), 120);
   });
   bar.addEventListener('click', () => {
     if (state.drag.justDragged) {
