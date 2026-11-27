@@ -1166,7 +1166,7 @@
 /* 吸边时只降低透明度，不缩小点击区域 */
 #vocab-break-reader-bar.is-open.vb-docked-left,
 #vocab-break-reader-bar.is-open.vb-docked-right {
-    opacity: .5 !important;
+    opacity: .4 !important;
 }
 
 /* 唤醒、点击或聚焦时恢复透明度 */
@@ -1180,4 +1180,18 @@
 /* 透明度过渡 */
 #vocab-break-reader-bar {
     transition: opacity 280ms ease !important;
+}
+/* 扩大悬浮入口触控范围，不改变图标大小 */
+#vocab-break-reader-bar {
+    width: 33px !important;
+    height: 33px !important;
+    min-width: 33px !important;
+    min-height: 33px !important;
+}
+
+/* 图片保持原来的大小 */
+#vocab-break-reader-bar::before {
+    width: 24px !important;
+    height: 30px !important;
+    background-size: contain !important;
 }
