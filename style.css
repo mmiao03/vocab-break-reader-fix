@@ -1155,3 +1155,29 @@
     opacity: 1 !important;
     pointer-events: auto !important;
 }
+/* ===== 阅读悬浮图标：吸边半透明，点击恢复 ===== */
+
+/* 保持悬浮按钮完整点击区域 */
+#vocab-break-reader-bar {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* 吸边时只降低透明度，不缩小点击区域 */
+#vocab-break-reader-bar.is-open.vb-docked-left,
+#vocab-break-reader-bar.is-open.vb-docked-right {
+    opacity: .5 !important;
+}
+
+/* 唤醒、点击或聚焦时恢复透明度 */
+#vocab-break-reader-bar.is-open.vb-awake,
+#vocab-break-reader-bar.is-open:active,
+#vocab-break-reader-bar.is-open:focus,
+#vocab-break-reader-bar.is-open:focus-visible {
+    opacity: 1 !important;
+}
+
+/* 透明度过渡 */
+#vocab-break-reader-bar {
+    transition: opacity 280ms ease !important;
+}
