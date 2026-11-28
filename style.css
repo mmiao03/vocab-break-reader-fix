@@ -1106,7 +1106,7 @@
 
 #vocab-break-reader-bar.is-open.vb-docked-left::before,
 #vocab-break-reader-bar.is-open.vb-docked-right::before {
-  transform: translate(-50%, -50%) scale(.82) !important;
+  transform: translate(-50%, -50%) scale(.88) !important;
 }
 
 /* 唤醒（hover / 触摸按下）：图标滑出并恢复 */
