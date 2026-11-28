@@ -2195,12 +2195,14 @@ function ensureReaderBar() {
     <div class="vb-bar-title">阅读小窗</div>
     <div class="vb-bar-caret">▾</div>
   `;
-  bar.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'mouse') bar.classList.add('vb-awake');
+
+  /* 鼠标/触控进入：唤醒图标 */
+  bar.addEventListener('pointerenter', () => {
+    bar.classList.add('vb-awake');
   });
 
   bar.addEventListener('pointerleave', e => {
-    if (e.pointerType === 'mouse' && !state.drag.active) {
+    if (!state.drag.active) {
       bar.classList.remove('vb-awake');
     }
   });
@@ -2211,11 +2213,11 @@ function ensureReaderBar() {
   });
 
   bar.addEventListener('pointerup', () => {
-    window.setTimeout(() => bar.classList.remove('vb-awake'), 280);
+    window.setTimeout(() => bar.classList.remove('vb-awake'), 300);
   });
 
   bar.addEventListener('pointercancel', () => {
-    window.setTimeout(() => bar.classList.remove('vb-awake'), 120);
+    bar.classList.remove('vb-awake');
   });
   bar.addEventListener('click', () => {
     if (state.drag.justDragged) {
@@ -2507,7 +2509,7 @@ function createSettingsInterface() {
       <b>阅读小窗</b>
       <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
     </div>
-    <div class="inline-drawer-content">
+    <div class="inline-drawer-content" style="display: none;">
       <div class="extension-content flex flexFlowColumn gap10px">
         <div class="extension-content-item box-container">
           <div class="settings-title">
