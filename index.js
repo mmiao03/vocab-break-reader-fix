@@ -1296,52 +1296,36 @@ function applyCustomCss() {
 }
 
 /**
- * 自定义配色：只在浅色（白天）模式下生效。
- * 规则整体包进 prefers-color-scheme: light，
- * 夜间模式继续走 style.css 里 @media (prefers-color-scheme: dark) 的自动配色。
+ * 自定义配色：通过 CSS 变量注入，只作用于面板根节点。
+ * style.css 中所有面板内元素使用 var(--vb-xxx, fallback)，
+ * 变量只在 #vocab-break-reader-panel 上定义，不会泄漏到酒馆其他元素。
  *
- * 五个可调项：
- *   panelBg  —— 面板底色（正文框与按钮之外的那块）
- *   border   —— 边框
- *   pageBg   —— 正文背景
- *   buttonBg —— 底部上一章/下一章按钮背景（标题行小图标不跟随）
- *   text     —— 字体颜色
+ * 五个可调变量：
+ *   --vb-panel-bg  —— 面板底色
+ *   --vb-border    —— 边框颜色
+ *   --vb-page-bg   —— 正文背景
+ *   --vb-btn-bg    —— 按钮/下拉框背景
+ *   --vb-text      —— 字体颜色
  */
-function buildColorRules({ panelBg, border, pageBg, btnBg, text }) {
-  const rules = [];
-  if (panelBg) {
-    rules.push(`#vocab-break-reader-panel { background: ${panelBg} !important; }`);
-  }
-  if (border) {
-    rules.push(`#vocab-break-reader-panel { border-color: ${border} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-header, #vocab-break-reader-panel .vb-footer-reader { border-color: ${border} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-reader-page { border-color: ${border} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-actions-reader button { border-color: ${border} !important; }`);
-  }
-  if (pageBg) {
-    rules.push(`#vocab-break-reader-panel .vb-reader-page { background: ${pageBg} !important; }`);
-  }
-  if (btnBg) {
-    rules.push(`#vocab-break-reader-panel .vb-actions-reader button { background: ${btnBg} !important; }`);
-  }
-  if (text) {
-    rules.push(`#vocab-break-reader-panel { color: ${text} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-title, #vocab-break-reader-panel .vb-reader-title, #vocab-break-reader-panel .vb-reader-meta, #vocab-break-reader-panel .vb-reader-percent { color: ${text} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-reader-page, #vocab-break-reader-panel .vb-reader-page * { color: ${text} !important; }`);
-    rules.push(`#vocab-break-reader-panel .vb-actions-reader button { color: ${text} !important; }`);
-  }
-  return rules;
+function buildColorVars({ panelBg, border, pageBg, btnBg, text }) {
+  const vars = [];
+  if (panelBg) vars.push(`--vb-panel-bg:${panelBg}`);
+  if (border)  vars.push(`--vb-border:${border}`);
+  if (pageBg)  vars.push(`--vb-page-bg:${pageBg}`);
+  if (btnBg)   vars.push(`--vb-btn-bg:${btnBg}`);
+  if (text)    vars.push(`--vb-text:${text}`);
+  return vars.length ? vars.join(';') + ';' : '';
 }
 
 function applyReaderColors() {
-  const lightRules = buildColorRules({
+  const lightVars = buildColorVars({
     panelBg: sanitizeColor(pluginConfig.readerPanelBgColor),
     border:  sanitizeColor(pluginConfig.readerBorderColor),
     pageBg:  sanitizeColor(pluginConfig.readerPageBgColor),
     btnBg:   sanitizeColor(pluginConfig.readerButtonBgColor),
     text:    sanitizeColor(pluginConfig.readerTextColor),
   });
-  const darkRules = buildColorRules({
+  const darkVars = buildColorVars({
     panelBg: sanitizeColor(pluginConfig.readerDarkPanelBgColor),
     border:  sanitizeColor(pluginConfig.readerDarkBorderColor),
     pageBg:  sanitizeColor(pluginConfig.readerDarkPageBgColor),
@@ -1351,7 +1335,7 @@ function applyReaderColors() {
 
   let styleEl = document.getElementById(COLOR_STYLE_ID);
 
-  if (!lightRules.length && !darkRules.length) {
+  if (!lightVars && !darkVars) {
     if (styleEl) styleEl.remove();
     return;
   }
@@ -1362,11 +1346,11 @@ function applyReaderColors() {
   }
 
   let css = '';
-  if (lightRules.length) {
-    css += `@media (prefers-color-scheme: light) {\n${lightRules.join('\n')}\n}\n`;
+  if (lightVars) {
+    css += `@media (prefers-color-scheme: light) {\n  #vocab-break-reader-panel { ${lightVars} }\n}\n`;
   }
-  if (darkRules.length) {
-    css += `@media (prefers-color-scheme: dark) {\n${darkRules.join('\n')}\n}\n`;
+  if (darkVars) {
+    css += `@media (prefers-color-scheme: dark) {\n  #vocab-break-reader-panel { ${darkVars} }\n}\n`;
   }
 
   document.head.appendChild(styleEl);
