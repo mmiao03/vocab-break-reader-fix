@@ -987,10 +987,10 @@
 #vocab-break-reader-bar {
   position: fixed !important;
   /* 触控区域 44×44，视觉图标通过 ::before 控制 */
-  width: 44px !important;
-  height: 44px !important;
-  min-width: 44px !important;
-  min-height: 44px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
@@ -1069,12 +1069,12 @@
 */
 #vocab-break-reader-bar.is-open.vb-docked-left,
 #vocab-break-reader-bar.is-open.vb-docked-right {
-  opacity: .38 !important;
+  opacity: .48 !important;
 }
 
 #vocab-break-reader-bar.is-open.vb-docked-left::before,
 #vocab-break-reader-bar.is-open.vb-docked-right::before {
-  transform: translate(-50%, -50%) scale(.82) !important;
+  transform: translate(-50%, -50%) scale(.92) !important;
 }
 
 /* 唤醒（hover / 触摸按下）：图标滑出并恢复 */
