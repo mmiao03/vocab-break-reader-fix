@@ -1101,7 +1101,7 @@
 */
 #vocab-break-reader-bar.is-open.vb-docked-left,
 #vocab-break-reader-bar.is-open.vb-docked-right {
-  opacity: .38 !important;
+  opacity: .45 !important;
 }
 
 #vocab-break-reader-bar.is-open.vb-docked-left::before,
