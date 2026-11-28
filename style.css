@@ -812,38 +812,6 @@
   }
 }
 
-/* ===== 夜间模式：酒馆聊天区域同步 ===== */
-@media (prefers-color-scheme: dark) {
-  #send_form,
-  #send_form:focus-within {
-    background-color: #292929 !important;
-    color: #E0E0E0 !important;
-  }
-
-  #send_textarea,
-  #send_textarea:focus {
-    background-color: #292929 !important;
-    color: #E0E0E0 !important;
-    caret-color: #FFFFFF !important;
-  }
-
-  #chat .mes .mes_text {
-    background: #292929 !important;
-    color: #E0E0E0 !important;
-  }
-
-  #chat .mes[is_user="true"],
-  #chat .mes[is_user="false"] {
-    background-color: #292929 !important;
-  }
-
-  #send_form,
-  #send_textarea,
-  #chat .mes[is_user="true"],
-  #chat .mes[is_user="false"] {
-    border-color: #1E1E1E !important;
-  }
-}
 
 /* ===== 夜间模式：阅读小窗 ===== */
 @media (prefers-color-scheme: dark) {
@@ -1019,10 +987,10 @@
 #vocab-break-reader-bar {
   position: fixed !important;
   /* 触控区域 44×44，视觉图标通过 ::before 控制 */
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
@@ -1101,12 +1069,12 @@
 */
 #vocab-break-reader-bar.is-open.vb-docked-left,
 #vocab-break-reader-bar.is-open.vb-docked-right {
-  opacity: .45 !important;
+  opacity: .38 !important;
 }
 
 #vocab-break-reader-bar.is-open.vb-docked-left::before,
 #vocab-break-reader-bar.is-open.vb-docked-right::before {
-  transform: translate(-50%, -50%) scale(.90) !important;
+  transform: translate(-50%, -50%) scale(.82) !important;
 }
 
 /* 唤醒（hover / 触摸按下）：图标滑出并恢复 */
