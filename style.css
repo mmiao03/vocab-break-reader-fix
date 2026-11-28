@@ -1019,10 +1019,10 @@
 #vocab-break-reader-bar {
   position: fixed !important;
   /* 触控区域 44×44，视觉图标通过 ::before 控制 */
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  min-height: 32px !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   padding: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
@@ -1101,12 +1101,12 @@
 */
 #vocab-break-reader-bar.is-open.vb-docked-left,
 #vocab-break-reader-bar.is-open.vb-docked-right {
-  opacity: .45 !important;
+  opacity: .38 !important;
 }
 
 #vocab-break-reader-bar.is-open.vb-docked-left::before,
 #vocab-break-reader-bar.is-open.vb-docked-right::before {
-  transform: translate(-50%, -50%) scale(.88) !important;
+  transform: translate(-50%, -50%) scale(.82) !important;
 }
 
 /* 唤醒（hover / 触摸按下）：图标滑出并恢复 */
@@ -1127,4 +1127,91 @@
 }
 #vocab-break-reader-bar:active::before {
   transform: translate(-50%, -50%) scale(.96) !important;
+}
+
+/* ===== 配色 UI ===== */
+.vb-color-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.vb-color-tab {
+  flex: 1;
+  padding: 5px 0;
+  border: 1px solid rgba(127, 127, 127, .22);
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: .55;
+  transition: opacity .15s, background .15s, border-color .15s;
+  color: inherit;
+}
+
+.vb-color-tab:hover {
+  opacity: .8;
+}
+
+.vb-color-tab--active {
+  opacity: 1;
+  background: rgba(127, 127, 127, .1);
+  border-color: rgba(127, 127, 127, .35);
+}
+
+.vb-color-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px 4px;
+  padding: 2px 0 6px;
+}
+
+.vb-color-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.vb-color-cell input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(127, 127, 127, .18);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+  transition: transform .15s cubic-bezier(.16, 1, .3, 1), box-shadow .15s;
+  background: none;
+}
+
+.vb-color-cell input[type="color"]:hover {
+  transform: scale(1.12);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .22);
+}
+
+.vb-color-cell input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.vb-color-cell input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.vb-color-cell input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.vb-color-cell span {
+  font-size: 10.5px;
+  opacity: .6;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
 }
