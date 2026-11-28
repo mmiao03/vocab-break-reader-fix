@@ -41,12 +41,18 @@ const DEFAULT_CONFIG = {
   readerParagraphSpacing: 16,
   readerEncoding: 'auto',
   readerKeepScroll: true,
-  /* 自定义配色：空字符串表示不覆盖主题 */
+  /* 日间自定义配色：空字符串表示不覆盖主题 */
   readerPanelBgColor: '',
   readerBorderColor: '',
   readerPageBgColor: '',
   readerButtonBgColor: '',
   readerTextColor: '',
+  /* 夜间自定义配色：空字符串表示不覆盖主题 */
+  readerDarkPanelBgColor: '',
+  readerDarkBorderColor: '',
+  readerDarkPageBgColor: '',
+  readerDarkButtonBgColor: '',
+  readerDarkTextColor: '',
 };
 
 const READER_CONTENT_KEY = `${STORAGE_PREFIX}:reader:content`;
@@ -154,9 +160,7 @@ function initConfig() {
   }
 
   pluginConfig.customCss = typeof pluginConfig.customCss === 'string' ? pluginConfig.customCss : '';
-  pluginConfig.settingsOpen = typeof pluginConfig.settingsOpen === 'boolean'
-    ? pluginConfig.settingsOpen
-    : DEFAULT_CONFIG.settingsOpen;
+  pluginConfig.settingsOpen = false; // 始终默认收起，不持久化展开状态
 
   pluginConfig.readerPanelWidth = Number.isFinite(Number(pluginConfig.readerPanelWidth))
     ? Number(pluginConfig.readerPanelWidth)
@@ -197,6 +201,11 @@ function initConfig() {
   pluginConfig.readerPageBgColor = sanitizeColor(pluginConfig.readerPageBgColor);
   pluginConfig.readerButtonBgColor = sanitizeColor(pluginConfig.readerButtonBgColor);
   pluginConfig.readerTextColor = sanitizeColor(pluginConfig.readerTextColor);
+  pluginConfig.readerDarkPanelBgColor = sanitizeColor(pluginConfig.readerDarkPanelBgColor);
+  pluginConfig.readerDarkBorderColor = sanitizeColor(pluginConfig.readerDarkBorderColor);
+  pluginConfig.readerDarkPageBgColor = sanitizeColor(pluginConfig.readerDarkPageBgColor);
+  pluginConfig.readerDarkButtonBgColor = sanitizeColor(pluginConfig.readerDarkButtonBgColor);
+  pluginConfig.readerDarkTextColor = sanitizeColor(pluginConfig.readerDarkTextColor);
 
   if (!TEXT_ENCODINGS.some(encoding => encoding.id === String(pluginConfig.readerEncoding || ''))) {
     pluginConfig.readerEncoding = DEFAULT_CONFIG.readerEncoding;
@@ -1298,45 +1307,51 @@ function applyCustomCss() {
  *   buttonBg —— 底部上一章/下一章按钮背景（标题行小图标不跟随）
  *   text     —— 字体颜色
  */
-function applyReaderColors() {
-  const panelBg = sanitizeColor(pluginConfig.readerPanelBgColor);
-  const border = sanitizeColor(pluginConfig.readerBorderColor);
-  const pageBg = sanitizeColor(pluginConfig.readerPageBgColor);
-  const btnBg = sanitizeColor(pluginConfig.readerButtonBgColor);
-  const text = sanitizeColor(pluginConfig.readerTextColor);
-
+function buildColorRules({ panelBg, border, pageBg, btnBg, text }) {
   const rules = [];
-
   if (panelBg) {
     rules.push(`#vocab-break-reader-panel { background: ${panelBg} !important; }`);
   }
-
   if (border) {
     rules.push(`#vocab-break-reader-panel { border-color: ${border} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-header, #vocab-break-reader-panel .vb-footer-reader { border-color: ${border} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-reader-page { border-color: ${border} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-actions-reader button { border-color: ${border} !important; }`);
   }
-
   if (pageBg) {
     rules.push(`#vocab-break-reader-panel .vb-reader-page { background: ${pageBg} !important; }`);
   }
-
   if (btnBg) {
-    /* 只作用于底部章节目录切换按钮；标题行小图标保持透明底 */
     rules.push(`#vocab-break-reader-panel .vb-actions-reader button { background: ${btnBg} !important; }`);
   }
-
   if (text) {
     rules.push(`#vocab-break-reader-panel { color: ${text} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-title, #vocab-break-reader-panel .vb-reader-title, #vocab-break-reader-panel .vb-reader-meta, #vocab-break-reader-panel .vb-reader-percent { color: ${text} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-reader-page, #vocab-break-reader-panel .vb-reader-page * { color: ${text} !important; }`);
     rules.push(`#vocab-break-reader-panel .vb-actions-reader button { color: ${text} !important; }`);
   }
+  return rules;
+}
+
+function applyReaderColors() {
+  const lightRules = buildColorRules({
+    panelBg: sanitizeColor(pluginConfig.readerPanelBgColor),
+    border:  sanitizeColor(pluginConfig.readerBorderColor),
+    pageBg:  sanitizeColor(pluginConfig.readerPageBgColor),
+    btnBg:   sanitizeColor(pluginConfig.readerButtonBgColor),
+    text:    sanitizeColor(pluginConfig.readerTextColor),
+  });
+  const darkRules = buildColorRules({
+    panelBg: sanitizeColor(pluginConfig.readerDarkPanelBgColor),
+    border:  sanitizeColor(pluginConfig.readerDarkBorderColor),
+    pageBg:  sanitizeColor(pluginConfig.readerDarkPageBgColor),
+    btnBg:   sanitizeColor(pluginConfig.readerDarkButtonBgColor),
+    text:    sanitizeColor(pluginConfig.readerDarkTextColor),
+  });
 
   let styleEl = document.getElementById(COLOR_STYLE_ID);
 
-  if (!rules.length) {
+  if (!lightRules.length && !darkRules.length) {
     if (styleEl) styleEl.remove();
     return;
   }
@@ -1346,9 +1361,16 @@ function applyReaderColors() {
     styleEl.id = COLOR_STYLE_ID;
   }
 
-  /* 重新 append 保证排在 head 末尾；外层 media 限定只在白天生效 */
+  let css = '';
+  if (lightRules.length) {
+    css += `@media (prefers-color-scheme: light) {\n${lightRules.join('\n')}\n}\n`;
+  }
+  if (darkRules.length) {
+    css += `@media (prefers-color-scheme: dark) {\n${darkRules.join('\n')}\n}\n`;
+  }
+
   document.head.appendChild(styleEl);
-  styleEl.textContent = `@media (prefers-color-scheme: light) {\n${rules.join('\n')}\n}`;
+  styleEl.textContent = css;
 }
 
 function getReaderSourceLabel(source) {
@@ -2572,30 +2594,64 @@ function createSettingsInterface() {
           </div>
         </div>
 
-        <div class="extension-content-item box-container">
+        <div class="extension-content-item box-container vb-color-box">
           <div class="settings-title">
             <div class="settings-title-text">阅读小窗配色</div>
-            <div class="settings-title-description">只在白天（浅色）模式生效，夜间自动配色不受影响；「恢复默认」会清空全部自定义</div>
+            <div class="settings-title-description">系统切换日夜时自动应用；「恢复默认」清空当前标签页配色</div>
           </div>
-          <div class="vb-inline">
-            <span>底色</span>
-            <input id="${MODULE_NAME}_color_panel_bg" type="color" value="${sanitizeColor(pluginConfig.readerPanelBgColor) || '#f2ece3'}" />
-            <span>边框</span>
-            <input id="${MODULE_NAME}_color_border" type="color" value="${sanitizeColor(pluginConfig.readerBorderColor) || '#c9b79b'}" />
+          <div class="vb-color-tabs">
+            <button class="vb-color-tab vb-color-tab--active" data-vb-tab="light">☀ 日间</button>
+            <button class="vb-color-tab" data-vb-tab="dark">☽ 夜间</button>
           </div>
-          <div class="vb-inline" style="margin-top: 6px;">
-            <span>正文背景</span>
-            <input id="${MODULE_NAME}_color_page_bg" type="color" value="${sanitizeColor(pluginConfig.readerPageBgColor) || '#faf5ec'}" />
-            <span>按钮背景</span>
-            <input id="${MODULE_NAME}_color_button_bg" type="color" value="${sanitizeColor(pluginConfig.readerButtonBgColor) || '#f7f3ee'}" />
+          <div class="vb-color-panel" id="${MODULE_NAME}_tab_light">
+            <div class="vb-color-grid">
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_color_panel_bg" type="color" value="${sanitizeColor(pluginConfig.readerPanelBgColor) || '#f2ece3'}" />
+                <span>面板底色</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_color_border" type="color" value="${sanitizeColor(pluginConfig.readerBorderColor) || '#c9b79b'}" />
+                <span>边框</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_color_page_bg" type="color" value="${sanitizeColor(pluginConfig.readerPageBgColor) || '#faf5ec'}" />
+                <span>正文背景</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_color_button_bg" type="color" value="${sanitizeColor(pluginConfig.readerButtonBgColor) || '#f7f3ee'}" />
+                <span>按钮背景</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_color_text" type="color" value="${sanitizeColor(pluginConfig.readerTextColor) || '#2f2a24'}" />
+                <span>文字颜色</span>
+              </label>
+            </div>
           </div>
-          <div class="vb-inline" style="margin-top: 6px;">
-            <span>字体颜色</span>
-            <input id="${MODULE_NAME}_color_text" type="color" value="${sanitizeColor(pluginConfig.readerTextColor) || '#2f2a24'}" />
+          <div class="vb-color-panel" id="${MODULE_NAME}_tab_dark" style="display:none">
+            <div class="vb-color-grid">
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_dark_color_panel_bg" type="color" value="${sanitizeColor(pluginConfig.readerDarkPanelBgColor) || '#1e1c1a'}" />
+                <span>面板底色</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_dark_color_border" type="color" value="${sanitizeColor(pluginConfig.readerDarkBorderColor) || '#3d3530'}" />
+                <span>边框</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_dark_color_page_bg" type="color" value="${sanitizeColor(pluginConfig.readerDarkPageBgColor) || '#242120'}" />
+                <span>正文背景</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_dark_color_button_bg" type="color" value="${sanitizeColor(pluginConfig.readerDarkButtonBgColor) || '#2d2a27'}" />
+                <span>按钮背景</span>
+              </label>
+              <label class="vb-color-cell">
+                <input id="${MODULE_NAME}_dark_color_text" type="color" value="${sanitizeColor(pluginConfig.readerDarkTextColor) || '#d4c9b8'}" />
+                <span>文字颜色</span>
+              </label>
+            </div>
           </div>
-          <div class="vb-inline" style="margin-top: 8px;">
-            <button class="menu_button" id="${MODULE_NAME}_color_reset">恢复默认配色</button>
-          </div>
+          <button class="menu_button" id="${MODULE_NAME}_color_reset" style="margin-top:10px">恢复默认配色</button>
         </div>
 
         <div class="extension-content-item box-container">
@@ -2714,37 +2770,43 @@ function createSettingsInterface() {
 
     if (t.id === `${MODULE_NAME}_color_panel_bg`) {
       pluginConfig.readerPanelBgColor = sanitizeColor(t.value);
-      saveSettings();
-      applyReaderColors();
-      return;
+      saveSettings(); applyReaderColors(); return;
     }
-
     if (t.id === `${MODULE_NAME}_color_border`) {
       pluginConfig.readerBorderColor = sanitizeColor(t.value);
-      saveSettings();
-      applyReaderColors();
-      return;
+      saveSettings(); applyReaderColors(); return;
     }
-
     if (t.id === `${MODULE_NAME}_color_page_bg`) {
       pluginConfig.readerPageBgColor = sanitizeColor(t.value);
-      saveSettings();
-      applyReaderColors();
-      return;
+      saveSettings(); applyReaderColors(); return;
     }
-
     if (t.id === `${MODULE_NAME}_color_button_bg`) {
       pluginConfig.readerButtonBgColor = sanitizeColor(t.value);
-      saveSettings();
-      applyReaderColors();
-      return;
+      saveSettings(); applyReaderColors(); return;
     }
-
     if (t.id === `${MODULE_NAME}_color_text`) {
       pluginConfig.readerTextColor = sanitizeColor(t.value);
-      saveSettings();
-      applyReaderColors();
-      return;
+      saveSettings(); applyReaderColors(); return;
+    }
+    if (t.id === `${MODULE_NAME}_dark_color_panel_bg`) {
+      pluginConfig.readerDarkPanelBgColor = sanitizeColor(t.value);
+      saveSettings(); applyReaderColors(); return;
+    }
+    if (t.id === `${MODULE_NAME}_dark_color_border`) {
+      pluginConfig.readerDarkBorderColor = sanitizeColor(t.value);
+      saveSettings(); applyReaderColors(); return;
+    }
+    if (t.id === `${MODULE_NAME}_dark_color_page_bg`) {
+      pluginConfig.readerDarkPageBgColor = sanitizeColor(t.value);
+      saveSettings(); applyReaderColors(); return;
+    }
+    if (t.id === `${MODULE_NAME}_dark_color_button_bg`) {
+      pluginConfig.readerDarkButtonBgColor = sanitizeColor(t.value);
+      saveSettings(); applyReaderColors(); return;
+    }
+    if (t.id === `${MODULE_NAME}_dark_color_text`) {
+      pluginConfig.readerDarkTextColor = sanitizeColor(t.value);
+      saveSettings(); applyReaderColors(); return;
     }
 
     if (t.id === `${MODULE_NAME}_reader_encoding`) {
@@ -2763,6 +2825,18 @@ function createSettingsInterface() {
   root.addEventListener('click', e => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
+
+    /* 配色 tab 切换 */
+    if (t.classList.contains('vb-color-tab')) {
+      e.preventDefault();
+      const tab = t.dataset.vbTab;
+      root.querySelectorAll('.vb-color-tab').forEach(btn => btn.classList.remove('vb-color-tab--active'));
+      t.classList.add('vb-color-tab--active');
+      root.querySelectorAll('.vb-color-panel').forEach(panel => { panel.style.display = 'none'; });
+      const target = root.querySelector(`#${MODULE_NAME}_tab_${tab}`);
+      if (target) target.style.display = '';
+      return;
+    }
 
     if (t.id === `${MODULE_NAME}_reader_open`) {
       e.preventDefault();
@@ -2791,37 +2865,43 @@ function createSettingsInterface() {
 
     if (t.id === `${MODULE_NAME}_color_reset`) {
       e.preventDefault();
-      pluginConfig.readerPanelBgColor = '';
-      pluginConfig.readerBorderColor = '';
-      pluginConfig.readerPageBgColor = '';
-      pluginConfig.readerButtonBgColor = '';
-      pluginConfig.readerTextColor = '';
-      saveSettings();
-      applyReaderColors();
-
+      /* 判断当前激活的 tab，只清当前 tab */
+      const activeTab = root.querySelector('.vb-color-tab--active');
+      const tab = activeTab?.dataset?.vbTab ?? 'light';
       const setVal = (id, value) => {
         const el = document.getElementById(id);
         if (el instanceof HTMLInputElement) el.value = value;
       };
-      setVal(`${MODULE_NAME}_color_panel_bg`, '#f2ece3');
-      setVal(`${MODULE_NAME}_color_border`, '#c9b79b');
-      setVal(`${MODULE_NAME}_color_page_bg`, '#faf5ec');
-      setVal(`${MODULE_NAME}_color_button_bg`, '#f7f3ee');
-      setVal(`${MODULE_NAME}_color_text`, '#2f2a24');
-
-      toastr?.success?.('已恢复默认配色。', '阅读小窗');
+      if (tab === 'light') {
+        pluginConfig.readerPanelBgColor = '';
+        pluginConfig.readerBorderColor = '';
+        pluginConfig.readerPageBgColor = '';
+        pluginConfig.readerButtonBgColor = '';
+        pluginConfig.readerTextColor = '';
+        setVal(`${MODULE_NAME}_color_panel_bg`, '#f2ece3');
+        setVal(`${MODULE_NAME}_color_border`, '#c9b79b');
+        setVal(`${MODULE_NAME}_color_page_bg`, '#faf5ec');
+        setVal(`${MODULE_NAME}_color_button_bg`, '#f7f3ee');
+        setVal(`${MODULE_NAME}_color_text`, '#2f2a24');
+      } else {
+        pluginConfig.readerDarkPanelBgColor = '';
+        pluginConfig.readerDarkBorderColor = '';
+        pluginConfig.readerDarkPageBgColor = '';
+        pluginConfig.readerDarkButtonBgColor = '';
+        pluginConfig.readerDarkTextColor = '';
+        setVal(`${MODULE_NAME}_dark_color_panel_bg`, '#1e1c1a');
+        setVal(`${MODULE_NAME}_dark_color_border`, '#3d3530');
+        setVal(`${MODULE_NAME}_dark_color_page_bg`, '#242120');
+        setVal(`${MODULE_NAME}_dark_color_button_bg`, '#2d2a27');
+        setVal(`${MODULE_NAME}_dark_color_text`, '#d4c9b8');
+      }
+      saveSettings();
+      applyReaderColors();
+      toastr?.success?.(`已恢复${tab === 'light' ? '日间' : '夜间'}默认配色。`, '阅读小窗');
     }
   });
 
-  root.addEventListener('inline-drawer-toggle', () => {
-    const content = root.querySelector('.inline-drawer-content');
-    if (!content) return;
-    setTimeout(() => {
-      const isOpen = getComputedStyle(content).display !== 'none';
-      pluginConfig.settingsOpen = isOpen;
-      saveSettings();
-    }, 0);
-  });
+  /* settingsOpen 不再持久化，始终默认收起 */
 }
 
 /* ========================= 初始化 ========================= */
